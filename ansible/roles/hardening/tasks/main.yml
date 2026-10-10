@@ -1,0 +1,41 @@
+- name: Install packages
+  apt:
+    name: [ufw, fail2ban, python3-systemd]
+    state: present
+    update_cache: true
+
+- name: Disable SSH password login
+  copy:
+    dest: /etc/ssh/sshd_config.d/99-hardening.conf
+    content: |
+      PasswordAuthentication no
+      PermitRootLogin no
+    mode: "0644"
+  notify: restart ssh
+
+- name: Allow SSH through firewall
+  ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: Enable firewall (deny incoming by default)
+  ufw:
+    state: enabled
+    policy: deny
+
+- name: Configure fail2ban sshd jail to use the systemd journal
+  copy:
+    dest: /etc/fail2ban/jail.d/sshd-local.conf
+    content: |
+      [sshd]
+      enabled = true
+      backend = systemd
+    mode: "0644"
+  notify: restart fail2ban
+
+- name: Enable fail2ban
+  service:
+    name: fail2ban
+    state: started
+    enabled: true

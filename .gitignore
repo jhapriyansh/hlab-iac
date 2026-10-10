@@ -2,3 +2,4 @@
 *.tfstate
 *.tfstate.*
 *.bak
+ansible/inventory.ini
