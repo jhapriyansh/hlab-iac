@@ -25,6 +25,7 @@ resource "incus_instance" "test" {
 	config = {
 		"limits.cpu" = "1"
 		"limits.memory" = "1GiB"
+		"cloud-init.user-data" = file("${path.module}/cloud-init.yaml")
 	}
 }
 
