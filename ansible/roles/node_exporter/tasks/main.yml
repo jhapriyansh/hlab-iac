@@ -1,0 +1,18 @@
+- name: Install node exporter
+  apt:
+    name: prometheus-node-exporter
+    state: present
+    update_cache: true
+
+- name: Enable and start node exporter
+  service:
+    name: prometheus-node-exporter
+    state: started
+    enabled: true
+
+- name: Allow Prometheus to scrape port 9100 from the Incus bridge network
+  ufw:
+    rule: allow
+    port: "9100"
+    proto: tcp
+    src: 10.95.18.0/24
