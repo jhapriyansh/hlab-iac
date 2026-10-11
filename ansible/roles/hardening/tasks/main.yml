@@ -1,3 +1,9 @@
+- name: Use the apt cache on the Dell
+  copy:
+    dest: /etc/apt/apt.conf.d/01proxy
+    content: 'Acquire::http::Proxy "http://10.95.18.1:3142";'
+    mode: "0644"
+
 - name: Install packages
   apt:
     name: [ufw, fail2ban, python3-systemd]
