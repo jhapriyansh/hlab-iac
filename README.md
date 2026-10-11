@@ -166,10 +166,6 @@ The apt caching proxy cut the full rebuild by about 6x. Over the test period, ap
 
 **Terraform could not find the Dell.** The provider tried a local Incus socket, which does not exist on macOS. The `incus` client stores its config in `~/Library/Application Support/incus`, not `~/.config/incus`. Fixed by setting `config_dir` in the provider block and naming `remote = "dell"` on the resource.
 
-**`unexpected EOF` while creating the first VM.** Terraform held one API call open while the Dell downloaded the Debian image over a slow link, and the connection dropped. Fixed by pre-downloading the image on the Dell (inside `tmux`) so Terraform only had to use the cached copy.
-
-**cloud-init errors.** The user-data was rejected twice: once as invalid YAML (indentation inside a heredoc) and once because I wrote the config key as `cloud_init.user-data` instead of `cloud-init.user-data`. Fixed by moving the YAML to its own file and loading it with `file()`.
-
 **SSH refused on a fresh VM.** The VM was reachable but nothing was listening on port 22, because the minimal cloud image does not include `openssh-server`. Fixed by installing it through cloud-init `packages:` and enabling it with `runcmd`.
 
 **fail2ban crash-looped.** The idempotency check caught this: the second Ansible run still reported a change, and `systemctl is-active fail2ban` said `failed`. The journal showed `Have not found any log file for sshd jail`. The minimal image has no `/var/log/auth.log`, so fail2ban's default SSH jail had nothing to read. Fixed by installing `python3-systemd` and setting the jail's `backend = systemd`.
